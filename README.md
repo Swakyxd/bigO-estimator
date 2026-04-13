@@ -38,6 +38,9 @@ This repository has evolved from a simple API wrapper into a **comprehensive dev
 ### 📂 Batch File Processing
 ![Batch Analysis](assets/screenshot_1.png)
 
+### 🗃️ Persistent History Log
+![History Tab](assets/screenshot_5.png)
+
 ---
 
 ## 🚀 Quick Start
