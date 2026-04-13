@@ -24,6 +24,22 @@ This repository has evolved from a simple API wrapper into a **comprehensive dev
 
 ---
 
+## 📸 Screenshots
+
+### ⚡ Single Analysis & Live Streaming
+![Single Analysis](assets/screenshot_4.png)
+
+### 📊 Complexity Results & Growth Curve
+![Complexity Metrics](assets/screenshot_3.png)
+
+### ⚖️ Side-by-Side Comparison
+![Side-by-Side Compare](assets/screenshot_2.png)
+
+### 📂 Batch File Processing
+![Batch Analysis](assets/screenshot_1.png)
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
