@@ -3,6 +3,7 @@ import time
 import os
 import sys
 import re
+import matplotlib.pyplot as plt
 
 from config import OLLAMA_MODELS, BACKEND
 from analyzer import analyze_complexity, unload_model
@@ -95,13 +96,86 @@ def main():
         
         print(f"   => SOC: {soc:.1f}% | Time Acc: {ema_time:.1f}% | TPS: {tps:.1f} | SWAS: {swas:.1f}\n")
 
-    # Generate Markdown Report
-    report = "# 🏆 Big-O Estimator Model Leaderboard\n\n"
-    report += "| Model | SWAS | Time Acc | Space Acc | JSON SOC | Avg Latency | Appx TPS |\n"
-    report += "|---|---|---|---|---|---|---|\n"
-    
     # Sort by SWAS descending
     sorted_models = sorted(results.items(), key=lambda x: x[1]["swas"], reverse=True)
+
+    # Generate Matplotlib Graphs
+    import numpy as np
+    
+    models = [m.split(':')[0] for m, v in sorted_models]
+    raw_models = [m for m, v in sorted_models]
+    os.makedirs('assets', exist_ok=True)
+
+    # 1. SWAS & TPS (Speed Chart)
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    fig.patch.set_facecolor('white')
+    ax1.set_facecolor('white')
+
+    x = np.arange(len(models))
+    width = 0.35
+
+    ax1.bar(x - width/2, [results[m]['swas'] for m in raw_models], width, label='SWAS Score', color='#2ecc71')
+    ax2 = ax1.twinx()
+    ax2.bar(x + width/2, [results[m]['tps'] for m in raw_models], width, label='Tokens/Sec', color='#3498db')
+
+    ax1.set_ylabel('Speed-Weighted Accuracy Score (SWAS)', color='#2ecc71')
+    ax2.set_ylabel('Generation Speed (TPS)', color='#3498db')
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(models, rotation=15, ha='right')
+    ax1.set_title('Local Model Speed & Efficiency Performance', pad=15)
+    fig.legend(loc='upper right', bbox_to_anchor=(0.9, 0.9))
+    fig.tight_layout()
+    plt.savefig('assets/benchmark_speed.png', facecolor='white', dpi=150)
+    plt.close()
+
+    # 2. Accuracy Metrics Chart
+    fig, ax = plt.subplots(figsize=(10, 6))
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
+    width = 0.25
+
+    ax.bar(x - width, [results[m]['ema_time'] for m in raw_models], width, label='Time Acc %', color='#9b59b6')
+    ax.bar(x, [results[m]['ema_space'] for m in raw_models], width, label='Space Acc %', color='#e67e22')
+    ax.bar(x + width, [results[m]['soc'] for m in raw_models], width, label='JSON SOC %', color='#34495e')
+
+    ax.set_ylabel('Percentage Accuracy (%)')
+    ax.set_title('Analytical Rigor & JSON Compliance', pad=15)
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=15, ha='right')
+    ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.2), ncol=3)
+    fig.tight_layout()
+    plt.savefig('assets/benchmark_accuracy.png', facecolor='white', dpi=150)
+    plt.close()
+
+    # 3. Latency Chart (Horizontal)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
+
+    y_pos = np.arange(len(models))
+    latency = [results[m]['latency_avg'] for m in raw_models]
+    bars = ax.barh(y_pos, latency, align='center', color='#e74c3c')
+    ax.set_yticks(y_pos, labels=models)
+    ax.invert_yaxis()
+    ax.set_xlabel('Average Seconds per Request (Lower is Better)')
+    ax.set_title('Average Pipeline Latency Response Time')
+
+    for bar in bars:
+        w = bar.get_width()
+        ax.text(w + 0.3, bar.get_y() + bar.get_height()/2, 
+                f'{w:.1f}s', ha='left', va='center')
+
+    fig.tight_layout()
+    plt.savefig('assets/benchmark_latency.png', facecolor='white', dpi=150)
+    plt.close()
+
+    # Generate Markdown Report
+    report = "# 🏆 Big-O Estimator Model Leaderboard\n\n"
+    report += "### ⏱️ Speed & Efficiency\n![Speed Graph](assets/benchmark_speed.png)\n\n"
+    report += "### 🎯 Accuracy & Compliance\n![Accuracy Graph](assets/benchmark_accuracy.png)\n\n"
+    report += "### 🚀 Latency Profile\n![Latency Graph](assets/benchmark_latency.png)\n\n"
+    report += "| Model | SWAS | Time Acc | Space Acc | JSON SOC | Avg Latency | Appx TPS |\n"
+    report += "|---|---|---|---|---|---|---|\n"
     
     for m, vals in sorted_models:
         report += f"| `{m}` | **{vals['swas']:.1f}** | {vals['ema_time']:.1f}% | {vals['ema_space']:.1f}% | {vals['soc']:.1f}% | {vals['latency_avg']:.1f}s | {vals['tps']:.1f} |\n"

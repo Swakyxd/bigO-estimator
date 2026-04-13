@@ -1,5 +1,14 @@
 # 🏆 Big-O Estimator Model Leaderboard
 
+### ⏱️ Speed & Efficiency
+![Speed Graph](assets/benchmark_speed.png)
+
+### 🎯 Accuracy & Compliance
+![Accuracy Graph](assets/benchmark_accuracy.png)
+
+### 🚀 Latency Profile
+![Latency Graph](assets/benchmark_latency.png)
+
 | Model | SWAS | Time Acc | Space Acc | JSON SOC | Avg Latency | Appx TPS |
 |---|---|---|---|---|---|---|
 | `llama3.2:latest` | **359.6** | 87.5% | 75.0% | 100.0% | 5.6s | 41.1 |

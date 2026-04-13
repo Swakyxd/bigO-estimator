@@ -20,7 +20,6 @@ OLLAMA_MODELS = [
     "llama3.2:latest",
     "mistral:latest",
     "gemma3:4b",
-    "gemma4:latest",
 ]
 # Legacy single-model alias kept for backwards compat
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", OLLAMA_MODELS[0])
@@ -31,7 +30,6 @@ MODEL_META = {
     "llama3.2:latest":   ("3B  · Fast",   "⚡⚡⚡"),   # smallest / fastest
     "mistral:latest":    ("7B  · General","⚡⚡"),
     "gemma3:4b":         ("4B  · Fast",   "⚡⚡⚡"),
-    "gemma4:latest":     ("New · Fast",   "⚡⚡⚡"),
 }
 
 # --- Gemini Settings (Cloud) ---
